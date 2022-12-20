@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  service-mod:
+    build:
+      dockerfile: ./services/service.mod/service-mod.dockerfile
+    ports:
+      - "4089:4089"
+  
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: masoud
+      MINIO_ROOT_PASSWORD: Strong#Pass#2022
+    command: server --console-address ":9001" /data
+
+  postgres:
+    image: 'postgres:14.0'
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    volumes:
+      - postgres_storage:/data
+
+volumes:
+  minio_storage: {}
+  postgres_storage: {}
